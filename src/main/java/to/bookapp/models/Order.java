@@ -42,17 +42,27 @@ public class Order {
     public Order() {
     }
 
-    public Order(User user, List<OrderItem> books, double totalPrice, String firstName,
-                 String lastName, String phone, String email, String comments, String status) {
+    public Order(User user, List<OrderItem> books, String firstName,
+                 String lastName, String phone, String email) {
         this.user = user;
         this.books = books;
-        this.totalPrice = totalPrice;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.email = email;
+    }
+    public Order(String status) {
+        this.status = status;
+    }
+    public Order(User user, List<OrderItem> books, String firstName,
+                 String lastName, String phone, String email, String comments) {
+        this.user = user;
+        this.books = books;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.email = email;
         this.comments = comments;
-        this.status = status;
     }
 
     public Long getId() {
