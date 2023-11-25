@@ -18,15 +18,26 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
+    // GET api/books/
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    // GET api/books/:id
+    public Book getBookByID(Long id) {
+        return bookRepository.findById(id).get();
+    }
+
+    // POST api/books/
     public Book addBook(Book book){
         return bookRepository.save(book);
     }
 
+    // UPDATE api/books/:id
+    // -> Kasia
+
+    // DELETE api/books/:id
     public void deleteBookById(Long id) {
         bookRepository.deleteById(id);
-    }
-
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
     }
 }
