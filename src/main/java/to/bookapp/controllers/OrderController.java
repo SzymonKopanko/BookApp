@@ -4,9 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import to.bookapp.models.Order;
+import to.bookapp.models.User;
 import to.bookapp.services.OrderService;
+import to.bookapp.services.UserService;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -14,6 +18,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -26,6 +33,21 @@ public class OrderController {
         Order order = orderService.getOrderById(orderId);
         if (order != null) {
             return new ResponseEntity<>(order, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Order>> getOrderByUserId(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            List<Order> orders = orderService.getOrdersByUser(user);
+            if (orders.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(orders, HttpStatus.OK);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

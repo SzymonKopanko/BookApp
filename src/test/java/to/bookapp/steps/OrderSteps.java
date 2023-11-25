@@ -57,10 +57,10 @@ public class OrderSteps {
     public void afterEveryStory(){
         if (username != null){
             Optional<User> user = userRepository.findByUsername(username);
-            if (!user.isEmpty()){
-                Optional<List<Order>> orders = orderRepository.findAllByUser(user.get());
+            if (user.isPresent()){
+                List<Order> orders = orderRepository.findAllByUser(user.get());
                 if (!orders.isEmpty()){
-                    for (Order order : orders.get()){
+                    for (Order order : orders){
                         orderItemRepository.deleteAllByOrder(order);
                     }
                     orderRepository.deleteAllByUser(user.get());
@@ -81,7 +81,7 @@ public class OrderSteps {
     }
 
     @Given("a user with username $username")
-    public void givenAUserWithId(String username) {
+    public void givenAnUserWithId(String username) {
         this.username = username;
         if (userRepository.findByUsername(username).isEmpty()) {
             User user = new User(username, "user@mail", "qawsedrf123");
@@ -100,8 +100,13 @@ public class OrderSteps {
     }
 
     @Given("these books are in the order: $orderItems")
-    public void givenTheseBooksAreInTheOrder(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void givenTheseBooksAreInTheOrder(ExamplesTable table) {
+        this.orderItems = new ArrayList<>();
+        for (Map<String,String> row : table.getRows()){
+            OrderItem item = new OrderItem(bookRepository.getByTitle(row.get("Book Title")).get(), Integer.parseInt(row.get("Quantity")));
+            this.orderItems.add(item);
+        }
+
     }
     @Given("names are $firstName $lastName")
     public void givenNames(String firstName, String lastName) {
@@ -134,6 +139,7 @@ public class OrderSteps {
             orderItems.add(new OrderItem(book,2));
             Order new_order = new Order(user, orderItems, "Testowy", "Test", "654323243", "user@mail");
             Order savedOrder = orderRepository.save(new_order);
+            this.orderId = savedOrder.getId();
             orderItems.get(0).setOrder(savedOrder);
             orderItemRepository.save(orderItems.get(0));
         } else this.orderId = optionalOrder.get().getId();
@@ -197,7 +203,12 @@ public class OrderSteps {
     }
     @When("the user asks for all orders")
     public void whenUserAsksForAll(){
-        this.orders = getOrderService().getAllOrders();
+        User user = userRepository.findByUsername(this.username).get();
+        this.orders = getOrderService().getOrdersByUser(user);
+    }
+    @When("the user deletes order")
+    public void whenUserDeletesOrder(){
+        orderService.deleteOrder(this.orderId);
     }
 
     @Then("the order should be created")
@@ -217,5 +228,8 @@ public class OrderSteps {
     }
 
     @Then("2 records are returned")
-    public void thenAllRecordAreReturned(){Assert.assertEquals(2,orders.size());}
+    public void thenAllRecordAreReturned(){Assert.assertEquals(2,this.orders.size());}
+
+    @Then("order record is not in database")
+    public void thenRecordIsNotPresent(){Assert.assertTrue(orderRepository.findById(this.orderId).isEmpty());}
 }
