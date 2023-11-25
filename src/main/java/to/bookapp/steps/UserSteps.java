@@ -34,13 +34,25 @@ public class UserSteps {
         result = getUserService().addUser(user);
     }
 
-    @When("the user removes the user with the username $username")
-    public void whenUserRemovesUser(String username) {
-        getUserService().removeUser(username);
+    @When("the user updates the user with the id $id, username $username setting the email to $email and password to $password")
+    public void whenUserUpdatesUser(Long id, String username, String email, String password) {
+        User updatedUser = new User(username, email, password);
+        result = getUserService().updateUser(id, updatedUser);
+    }
+
+    @When("the user deletes the user with the id $id")
+    public void whenUserRemovesUser(Long id) {
+        getUserService().deleteUser(id);
     }
 
     @Then("the system should return user $expUsername, $expEmail, $expPassword")
-    public void thenTheResultShouldBe(String expUsername, String expEmail, String expPassword) {
+    public void thenTheSystemShouldAdd(String expUsername, String expEmail, String expPassword) {
+        User expUser = new User(expUsername, expEmail, expPassword);
+        Assert.assertEquals(expUser, result);
+    }
+
+    @Then("the system should ")
+    public void thenTheResultShouldBeExpectedUser(String expUsername, String expEmail, String expPassword) {
         User expUser = new User(expUsername, expEmail, expPassword);
         Assert.assertEquals(expUser, result);
     }

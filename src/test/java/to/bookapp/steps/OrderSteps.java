@@ -44,7 +44,7 @@ public class OrderSteps {
     private OrderService getOrderService() {
         return this.orderStash.get();
     }
-    private String username;
+    private Long userId;
     private List<OrderItem> orderItems;
     private String firstName;
     private String lastName;
@@ -55,8 +55,8 @@ public class OrderSteps {
 
     @AfterStory
     public void afterEveryStory(){
-        if (username != null){
-            Optional<User> user = userRepository.findByUsername(username);
+        if (userId != null){
+            Optional<User> user = userRepository.findById(userId);
             if (!user.isEmpty()){
                 Optional<List<Order>> orders = orderRepository.findAllByUser(user.get());
                 if (!orders.isEmpty()){
@@ -65,10 +65,10 @@ public class OrderSteps {
                     }
                     orderRepository.deleteAllByUser(user.get());
                 }
-                userRepository.deleteByUsername(username);
+                userRepository.deleteById(userId);
             }
         }
-        username = null;
+        userId = null;
         orderItems = null;
         firstName = null;
         lastName = null;
@@ -80,11 +80,11 @@ public class OrderSteps {
         books = null;
     }
 
-    @Given("a user with username $username")
-    public void givenAUserWithId(String username) {
-        this.username = username;
-        if (userRepository.findByUsername(username).isEmpty()) {
-            User user = new User(username, "user@mail", "qawsedrf123");
+    @Given("a user with id $userId")
+    public void givenAUserWithId(Long userId) {
+        this.userId = userId;
+        if (userRepository.findById(userId).isEmpty()) {
+            User user = new User("username", "user@mail", "qawsedrf123");
             userRepository.save(user);
         }
     }
@@ -117,13 +117,13 @@ public class OrderSteps {
         this.mail = mail;
     }
 
-    @Given("an order exists placed by $username")
-    public void givenAnOrderPlacedBy(String username){
-        this.username = username;
+    @Given("an order exists placed by user of id $userId")
+    public void givenAnOrderPlacedBy(Long userId){
+        this.userId = userId;
         User user = new User();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            User new_user = new User(username, "user@mail", "qawsedrf123");
+            User new_user = new User("username", "user@mail", "qawsedrf123");
             user = userRepository.save(new_user);
         }
         Optional<Order> optionalOrder = orderRepository.findByUser(user);
@@ -146,13 +146,13 @@ public class OrderSteps {
         }
     }
 
-    @Given("2 orders exist placed by $username")
-    public void givenCoupleOrdersExist(String username){
-        this.username = username;
+    @Given("2 orders exist placed by user of id $userId")
+    public void givenCoupleOrdersExist(Long userId){
+        this.userId = userId;
         User user = new User();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            User new_user = new User(username, "user@mail", "qawsedrf123");
+            User new_user = new User("username", "user@mail", "qawsedrf123");
             user = userRepository.save(new_user);
         }
         Optional<Order> optionalOrder = orderRepository.findByUser(user);
@@ -185,7 +185,6 @@ public class OrderSteps {
     @When("the user places order")
     public void whenTheUserPlacesOrder() {
         User user = new User();
-        user.setUsername(username);
 
         Order order = new Order(user, orderItems,firstName,lastName,phone,mail);
 

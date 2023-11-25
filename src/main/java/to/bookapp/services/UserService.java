@@ -2,12 +2,12 @@ package to.bookapp.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import to.bookapp.models.User;
 import to.bookapp.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,12 +22,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void removeUser(String username) {
-        userRepository.deleteByUsername(username);
+    public Optional<User> deleteUser(Long id) {
+        Optional<User> deletedUser = userRepository.findById(id);
+        userRepository.deleteById(id);
+        return deletedUser;
     }
 
-    @RequestMapping("/users")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public Optional<User> getUserById(Long userId) {return userRepository.findById(userId);}
+
+    public User updateUser(Long userId, User updatedUser) {
+        User existingUser = userRepository.findById(userId).get();
+
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setAdmin(updatedUser.isAdmin());
+
+        return userRepository.save(existingUser);
+    }
+
 }

@@ -7,6 +7,7 @@ import to.bookapp.models.User;
 import to.bookapp.services.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,7 +24,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
+        User user = userService.getUserById(userId).get();
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
@@ -33,7 +34,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> placeUser(@RequestBody User user) {
-        User savedUser = userService.placeUser(user);
+        User savedUser = userService.addUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
@@ -49,7 +50,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<User> deleteUser(@PathVariable Long userId) {
-        User deletedUser = userService.deleteUser(userId);
+        User deletedUser = userService.deleteUser(userId).get();
         if (deletedUser != null) {
             return new ResponseEntity<>(deletedUser, HttpStatus.OK);
         } else {

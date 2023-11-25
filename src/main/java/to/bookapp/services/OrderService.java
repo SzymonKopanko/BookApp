@@ -49,7 +49,7 @@ public class OrderService {
             throw new IllegalArgumentException("Invalid order. First and last name of person is required.");
         }
 
-        Optional<User> optionalUser = userRepository.findByUsername(order.getUser().getUsername());
+        Optional<User> optionalUser = userRepository.findById(order.getUser().getId());
         if (optionalUser.isEmpty()) {
             throw new IllegalArgumentException("User not found. Cannot place the order.");
         }

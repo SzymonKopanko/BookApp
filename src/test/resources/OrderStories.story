@@ -21,7 +21,7 @@ Then the order should be created
 And the order status should be "Reserved"
 
 Scenario: When user places the order without items the order record should not be created
-Given a user with username testUser
+Given a user with id 1
 And these books are in the database:
   | Title   | Author    | Year |
   | Book1   | Author1   | 1993 |
@@ -33,7 +33,7 @@ When the user places order
 Then an exception should be thrown
 
 Scenario: When user places order with unfilled credentials the order record should not be created
-Given a user with username testUser
+Given a user with id 1
 And these books are in the database:
   | Title   | Author    | Year |
   | Book1   | Author1   | 1993 |
