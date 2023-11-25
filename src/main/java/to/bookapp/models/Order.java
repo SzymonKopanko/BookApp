@@ -17,9 +17,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> books;
 
-    @Column(name = "total_price", nullable = false)
-    private double totalPrice;
-
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -87,14 +84,6 @@ public class Order {
 
     public void setBooks(List<OrderItem> books) {
         this.books = books;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public String getFirstName() {

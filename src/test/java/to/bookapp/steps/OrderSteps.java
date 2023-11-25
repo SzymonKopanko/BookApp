@@ -1,9 +1,7 @@
 package to.bookapp.steps;
+import org.jbehave.core.annotations.*;
 import org.junit.Assert;
 import to.bookapp.models.*;
-import org.jbehave.core.annotations.Given;
-import org.jbehave.core.annotations.Then;
-import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import to.bookapp.repositories.OrderRepository;
@@ -24,15 +22,32 @@ public class OrderSteps {
     @Autowired
     private OrderRepository orderRepository;
 
+    private final ThreadLocal<OrderService> orderStash = new ThreadLocal<>();
+    private OrderService getOrderService() {
+        return this.orderStash.get();
+    }
     private String username;
     private List<OrderItem> books;
     private String firstName;
     private String lastName;
     private String phone;
     private String mail;
-    private Optional<Order> dbOrder;
     private Long orderId;
+    private String status;
+    private Exception exception;
 
+    @AfterStory
+    public void afterEveryStory(){
+        username = null;
+        books = null;
+        firstName = null;
+        lastName = null;
+        phone = null;
+        mail = null;
+        orderId = null;
+        status = null;
+        exception = null;
+    }
 
     @Given("a user with username $username")
     public void givenAUserWithId(String username) {
@@ -64,17 +79,31 @@ public class OrderSteps {
 
     @Given("an order exists placed by $username")
     public void givenAnOrderPlacedBy(String username){
+        //todo sprawdz czy jest user
+        //todo sprawdz czy jest order
+
         User user = new User();
         user.setUsername(username);
         //TODO add some false order
         Order order = new Order();
-        this.orderId = orderService.placeOrder(order).getId();
+        this.orderId = getOrderService().placeOrder(order).getId();
+    }
+    @Given("order status is \"$status\"")
+    public void givenOrderStatusIs(String status){
+        if (!orderRepository.findById(orderId).get().getStatus().equals(status)){
+            Order updatedOrder = new Order(status);
+            getOrderService().updateOrder(orderId,updatedOrder);
+        }
     }
 
     @When ("user updates the order's status to \"$status\"")
     public void whenUserUpdatesOrderStatus(String status){
         Order updatedOrder = new Order(status);
-        orderService.updateOrder(orderId, updatedOrder);
+        try{
+            getOrderService().updateOrder(orderId, updatedOrder);
+        } catch (IllegalArgumentException e){
+            exception = e;
+        }
     }
 
     @When("the user places order")
@@ -84,7 +113,11 @@ public class OrderSteps {
 
         Order order = new Order(user, books,firstName,lastName,phone,mail);
 
-        this.orderId = orderService.placeOrder(order).getId();
+        try {
+            this.orderId = getOrderService().placeOrder(order).getId();
+        } catch (IllegalArgumentException e){
+            exception = e;
+        }
     }
 
     @Then("the order should be created")
@@ -98,9 +131,8 @@ public class OrderSteps {
     public void thenTheOrderStatusShouldBe(String status) {
         Assert.assertEquals(status,orderRepository.findById(orderId).get().getStatus());
     }
-
-    @Then("the total price should be $total")
-    public void thenTheTotalPriceShouldBe(Double total) {
-        Assert.assertEquals(total, orderRepository.findById(orderId).get().getTotalPrice(), 0.01);
+    @Then ("an exception should be thrown")
+    public void thenExceptionIsThrown(){
+        Assert.assertNotNull(exception);
     }
 }

@@ -47,18 +47,12 @@ public class OrderService {
             throw new IllegalArgumentException("User not found. Cannot place the order.");
         }
 
-        double Price = 0.0;
-
         for (OrderItem orderItem : order.getBooks()) {
-            Book book = orderItem.getBook();
             Optional<Book> optionalBook = bookRepository.findById(book.getId());
             if (optionalBook.isEmpty()) {
                 throw new IllegalArgumentException("Book not found: " + book.getId());
             }
-            int bookQuantity = orderItem.getQuantity();
-            Price += bookQuantity * optionalBook.get().getPrice();
         }
-        order.setTotalPrice(Price);
         order.setStatus("Reserved");
 
         Order savedOrder = orderRepository.save(order);
