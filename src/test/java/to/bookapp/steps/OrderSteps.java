@@ -4,6 +4,7 @@ import org.junit.Assert;
 import to.bookapp.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import to.bookapp.repositories.BookRepository;
 import to.bookapp.repositories.OrderRepository;
 import to.bookapp.services.OrderService;
 
