@@ -33,7 +33,7 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<Book> placeBook(@RequestBody Book book) {
-        Book savedBook = bookService.placeBook(book);
+        Book savedBook = bookService.addBook(book);
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
 
@@ -57,4 +57,5 @@ public class BookController {
         }
     }
 }
+
 

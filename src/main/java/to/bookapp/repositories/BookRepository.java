@@ -9,4 +9,5 @@ import to.bookapp.models.Book;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     void deleteByTitle(String title);
+
 }
