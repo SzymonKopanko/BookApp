@@ -17,8 +17,8 @@ public class UserSteps {
         return this.userStash.get();
     }
 
-    @Given("the system")
-    public void givenTheSystem() {
+    @Given("the system has no existing users")
+    public void givenTheSystemHasNoExistingUsers() {
         userStash.set(new UserService(userRepository));
     }
 
@@ -46,12 +46,6 @@ public class UserSteps {
     }
 
     @Then("the system should return user $expUsername, $expEmail, $expPassword")
-    public void thenTheSystemShouldAdd(String expUsername, String expEmail, String expPassword) {
-        User expUser = new User(expUsername, expEmail, expPassword);
-        Assert.assertEquals(expUser, result);
-    }
-
-    @Then("the system should ")
     public void thenTheResultShouldBeExpectedUser(String expUsername, String expEmail, String expPassword) {
         User expUser = new User(expUsername, expEmail, expPassword);
         Assert.assertEquals(expUser, result);
