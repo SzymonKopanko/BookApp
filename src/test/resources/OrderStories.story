@@ -39,9 +39,9 @@ And these books are in the database:
   | Book1   | Author1   | 1993 |
   | Book2   | Author2   | 2002 |
 And these books are in the order:
-  | Book Id | Quantity |
-  | 1       | 2        |
-  | 2       | 1        |
+  | Book Title | Quantity |
+  | Book1      | 2        |
+  | Book2      | 1        |
 And names are Adam Kowalski
 And mail is kowalski@gmail.com
 When the user places order
@@ -65,3 +65,6 @@ Then an exception should be thrown
 And the order status should be "Returned"
 
 Scenario: When user deletes order it should be deleted
+Given an order exists placed by testUser
+When the user deletes order
+Then order record is not in database
