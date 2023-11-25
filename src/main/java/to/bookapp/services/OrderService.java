@@ -1,19 +1,21 @@
 package to.bookapp.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import to.bookapp.models.Book;
 import to.bookapp.models.Order;
 import to.bookapp.models.OrderItem;
+import to.bookapp.models.User;
+import to.bookapp.repositories.BookRepository;
 import to.bookapp.repositories.OrderItemRepository;
 import to.bookapp.repositories.OrderRepository;
+import to.bookapp.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class OrderService {
-
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
     private OrderItemRepository orderItemRepository;
@@ -23,6 +25,11 @@ public class OrderService {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -42,13 +49,13 @@ public class OrderService {
             throw new IllegalArgumentException("Invalid order. First and last name of person is required.");
         }
 
-        Optional<User> optionalUser = userRepository.findById(order.getUser().getId());
+        Optional<User> optionalUser = userRepository.findByUsername(order.getUser().getUsername());
         if (optionalUser.isEmpty()) {
             throw new IllegalArgumentException("User not found. Cannot place the order.");
         }
 
-        for (OrderItem orderItem : order.getBooks()) {
-            Optional<Book> optionalBook = bookRepository.findById(book.getId());
+        for (OrderItem book : order.getBooks()) {
+            Optional<Book> optionalBook = bookRepository.findById(book.getBook().getId());
             if (optionalBook.isEmpty()) {
                 throw new IllegalArgumentException("Book not found: " + book.getId());
             }
