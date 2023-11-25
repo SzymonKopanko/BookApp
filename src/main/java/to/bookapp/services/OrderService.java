@@ -15,9 +15,7 @@ import java.util.Optional;
 
 @Service
 public class OrderService {
-
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
     private OrderItemRepository orderItemRepository;
@@ -27,6 +25,11 @@ public class OrderService {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -52,7 +55,7 @@ public class OrderService {
         }
 
         for (OrderItem book : order.getBooks()) {
-            Optional<Book> optionalBook = bookRepository.findById(book.getId());
+            Optional<Book> optionalBook = bookRepository.findById(book.getBook().getId());
             if (optionalBook.isEmpty()) {
                 throw new IllegalArgumentException("Book not found: " + book.getId());
             }
