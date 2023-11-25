@@ -57,10 +57,10 @@ public class OrderSteps {
     public void afterEveryStory(){
         if (userId != null){
             Optional<User> user = userRepository.findById(userId);
-            if (!user.isEmpty()){
-                Optional<List<Order>> orders = orderRepository.findAllByUser(user.get());
+            if (user.isPresent()){
+                List<Order> orders = orderRepository.findAllByUser(user.get());
                 if (!orders.isEmpty()){
-                    for (Order order : orders.get()){
+                    for (Order order : orders){
                         orderItemRepository.deleteAllByOrder(order);
                     }
                     orderRepository.deleteAllByUser(user.get());
@@ -81,7 +81,7 @@ public class OrderSteps {
     }
 
     @Given("a user with id $userId")
-    public void givenAUserWithId(Long userId) {
+    public void givenAnUserWithId(Long userId) {
         this.userId = userId;
         if (userRepository.findById(userId).isEmpty()) {
             User user = new User("username", "user@mail", "qawsedrf123");
@@ -100,8 +100,13 @@ public class OrderSteps {
     }
 
     @Given("these books are in the order: $orderItems")
-    public void givenTheseBooksAreInTheOrder(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void givenTheseBooksAreInTheOrder(ExamplesTable table) {
+        this.orderItems = new ArrayList<>();
+        for (Map<String,String> row : table.getRows()){
+            OrderItem item = new OrderItem(bookRepository.getByTitle(row.get("Book Title")).get(), Integer.parseInt(row.get("Quantity")));
+            this.orderItems.add(item);
+        }
+
     }
     @Given("names are $firstName $lastName")
     public void givenNames(String firstName, String lastName) {
@@ -117,7 +122,7 @@ public class OrderSteps {
         this.mail = mail;
     }
 
-    @Given("an order exists placed by user of id $userId")
+    @Given("an order exists placed by user with id $userId")
     public void givenAnOrderPlacedBy(Long userId){
         this.userId = userId;
         User user = new User();
@@ -134,6 +139,7 @@ public class OrderSteps {
             orderItems.add(new OrderItem(book,2));
             Order new_order = new Order(user, orderItems, "Testowy", "Test", "654323243", "user@mail");
             Order savedOrder = orderRepository.save(new_order);
+            this.orderId = savedOrder.getId();
             orderItems.get(0).setOrder(savedOrder);
             orderItemRepository.save(orderItems.get(0));
         } else this.orderId = optionalOrder.get().getId();
@@ -146,7 +152,7 @@ public class OrderSteps {
         }
     }
 
-    @Given("2 orders exist placed by user of id $userId")
+    @Given("2 orders exist placed by user with id $userId")
     public void givenCoupleOrdersExist(Long userId){
         this.userId = userId;
         User user = new User();
@@ -184,8 +190,7 @@ public class OrderSteps {
 
     @When("the user places order")
     public void whenTheUserPlacesOrder() {
-        User user = new User();
-
+        User user = userRepository.findById(this.userId).get();
         Order order = new Order(user, orderItems,firstName,lastName,phone,mail);
 
         try {
@@ -196,7 +201,12 @@ public class OrderSteps {
     }
     @When("the user asks for all orders")
     public void whenUserAsksForAll(){
-        this.orders = getOrderService().getAllOrders();
+        User user = userRepository.findById(this.userId).get();
+        this.orders = getOrderService().getOrdersByUser(user);
+    }
+    @When("the user deletes order")
+    public void whenUserDeletesOrder(){
+        orderService.deleteOrder(this.orderId);
     }
 
     @Then("the order should be created")
@@ -216,5 +226,8 @@ public class OrderSteps {
     }
 
     @Then("2 records are returned")
-    public void thenAllRecordAreReturned(){Assert.assertEquals(2,orders.size());}
+    public void thenAllRecordAreReturned(){Assert.assertEquals(2,this.orders.size());}
+
+    @Then("order record is not in database")
+    public void thenRecordIsNotPresent(){Assert.assertTrue(orderRepository.findById(this.orderId).isEmpty());}
 }

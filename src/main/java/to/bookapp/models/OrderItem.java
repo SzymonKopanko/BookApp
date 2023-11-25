@@ -28,7 +28,7 @@ public class OrderItem {
         this.book = book;
         this.quantity = quantity;
     }
-    public OrderItem( Book book, int quantity) {
+    public OrderItem(Book book, int quantity) {
         this.book = book;
         this.quantity = quantity;
     }
