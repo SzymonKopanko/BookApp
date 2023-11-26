@@ -40,9 +40,9 @@ public class OrderController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrderByUserId(@PathVariable Long userId) {
-        User user = userService.getUserById(userId).get();
-        if (user != null) {
-            List<Order> orders = orderService.getOrdersByUser(user);
+        Optional<User> user = userService.getUserById(userId);
+        if (user.isPresent()) {
+            List<Order> orders = orderService.getOrdersByUser(user.get());
             if (orders.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
