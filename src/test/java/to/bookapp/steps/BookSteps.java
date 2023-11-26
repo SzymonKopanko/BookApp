@@ -25,6 +25,7 @@ public class BookSteps {
     private Book originalBook;
     private Book deletedBook;
     private Book updatedBook;
+    private Long requestedBookId;
     private Book retrievedBook;
     private Book justBook;
     private Long justBookId;
@@ -32,6 +33,7 @@ public class BookSteps {
     private Exception thrownException;
     private BookRepository bookRepository;
     private String nonExistingTitle;
+    private BookRepository bookRepository;
     private final ThreadLocal<BookService> bookStash = new ThreadLocal<>();
 
     private BookService getBookService() {
@@ -264,6 +266,5 @@ public class BookSteps {
         Iterable<Book> allBooks = bookRepository.findAll();
         assert !allBooks.iterator().hasNext();
     }
-
 
 }
