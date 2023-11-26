@@ -8,6 +8,7 @@ Given there is an existing book with title "The Catcher in the Rye"
 When I try to add a book with title "The Catcher in the Rye" by author "J.D. Salinger" published in 1951
 Then the system should not create a new entry for the book
 
+
 Scenario: Displaying all books in the library
 Given there are books in the system:
   - Title: The Great Gatsby, Author: F. Scott Fitzgerald, Year: 1925
