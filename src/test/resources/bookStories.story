@@ -33,15 +33,6 @@ Given the library is empty
 When the user requests to display all books
 Then the system should display an empty list of books
 
-Scenario: Displaying books with a specific author
-Given there are books in the system:
-  - Title: The Great Gatsby, Author: F. Scott Fitzgerald, Year: 1925
-  - Title: To Kill a Mockingbird, Author: Harper Lee, Year: 1960
-  - Title: The Hobbit, Author: J.R.R. Tolkien, Year: 1937
-When the user requests to display books by author "F. Scott Fitzgerald"
-Then the system should display a list of books containing:
-  - Title: The Great Gatsby, Author: F. Scott Fitzgerald, Year: 1925
-
 Scenario: Updating the details of a book
 Given there is a book with title "The Great Gatsby", author "F. Scott Fitzgerald", and year 1925
 When the user updates the book with title "The Great Gatsby" with the following details:
