@@ -45,12 +45,8 @@ public class UserStories extends JUnitStories {
         LoadFromClasspath resourceLoader = new LoadFromClasspath(embeddableClass);
         TableTransformers tableTransformers = new TableTransformers();
         ParameterControls parameterControls = new ParameterControls();
-        // Start from default ParameterConverters instance
         ParameterConverters parameterConverters = new ParameterConverters(resourceLoader, tableTransformers);
-        // factory to allow parameter conversion and loading from external resources
-        // (used by StoryParser too)
         ExamplesTableFactory examplesTableFactory = new ExamplesTableFactory(resourceLoader, tableTransformers);
-        // add custom converters
         parameterConverters.addConverters(new DateConverter(new SimpleDateFormat("yyyy-MM-dd")),
                 new ExamplesTableConverter(examplesTableFactory));
         return new MostUsefulConfiguration()

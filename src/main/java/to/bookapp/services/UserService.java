@@ -22,10 +22,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> deleteUser(Long id) {
-        Optional<User> deletedUser = userRepository.findById(id);
-        userRepository.deleteById(id);
-        return deletedUser;
+    public Optional<User> deleteUser(Long userId) {
+        Optional<User> deletedUser = userRepository.findById(userId);
+        userRepository.deleteById(userId);
+        if(deletedUser.isPresent()) {
+            return deletedUser;
+        } else {
+            throw new RuntimeException("User with ID " + userId + " not found");
+        }
     }
 
     public List<User> getAllUsers() {
@@ -35,13 +39,17 @@ public class UserService {
     public Optional<User> getUserById(Long userId) {return userRepository.findById(userId);}
 
     public User updateUser(Long userId, User updatedUser) {
-        User existingUser = userRepository.findById(userId).get();
+        Optional<User> existingUserOptional = userRepository.findById(userId);
 
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setAdmin(updatedUser.isAdmin());
-
-        return userRepository.save(existingUser);
+        if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setPassword(updatedUser.getPassword());
+            existingUser.setAdmin(updatedUser.isAdmin());
+            return userRepository.save(existingUser);
+        } else {
+            throw new RuntimeException("User with ID " + userId + " not found");
+        }
     }
 
 }
